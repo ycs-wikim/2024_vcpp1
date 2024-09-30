@@ -124,6 +124,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
 //
 //
+
+/// 0 - 선 그리기, 1 - 사각형, 2 - 타원, 3 - 자유선
+int g_drawType = 0;
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -162,10 +166,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         osBrush = (HBRUSH)SelectObject(hdc, myBrush);
 
         /// 3. 사용
-        //Rectangle(hdc, 10, 10, x, y);
-
-        MoveToEx(hdc, 0, 0, NULL);
-        LineTo(hdc, x, y);
+        if (0 == g_drawType)
+        {
+            MoveToEx(hdc, 0, 0, NULL);
+            LineTo(hdc, x, y);
+        }
+        else if (1 == g_drawType)
+        {
+            Rectangle(hdc, 10, 10, x, y);
+        }
+        else if (2 == g_drawType)
+        {
+            Ellipse(hdc, 10, 10, x, y);
+        }
+        
 
         /// 4. 펜 복원
         SelectObject(hdc, osPen);
@@ -185,8 +199,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // 메뉴 선택을 구문 분석합니다:
             switch (wmId)
             {
+            case ID_32772:
+                g_drawType = 1;
+                //MessageBox(hWnd, L"사각형", L"그리기", MB_OK);
+                break;
+            case ID_32773:
+                g_drawType = 2;
+                //MessageBox(hWnd, L"타원", L"그리기", MB_OK);
+                break;
             case 777:
-                MessageBox(hWnd, L"버튼 클릭", L"왔다.", MB_OK);
+                //MessageBox(hWnd, L"버튼 클릭", L"왔다.", MB_OK);
+                InvalidateRect(hWnd, NULL, TRUE);
                 break;
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
